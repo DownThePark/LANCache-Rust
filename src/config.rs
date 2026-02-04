@@ -6,6 +6,8 @@ use log::warn;
 
 #[derive(Deserialize, Serialize, Clone)]
 pub struct Config {
+    pub http_bind: Ipv4Addr,
+    pub dns_bind: Ipv4Addr,
     pub cache_dir: String,
     pub dns_enabled: bool,
     pub server_ip: Ipv4Addr,
@@ -15,6 +17,8 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            http_bind: Ipv4Addr::new(0, 0, 0, 0),
+            dns_bind: Ipv4Addr::new(0, 0, 0, 0),
             cache_dir: "./cache".to_string(),
             dns_enabled: true,
             server_ip: Ipv4Addr::new(127, 0, 0, 1),

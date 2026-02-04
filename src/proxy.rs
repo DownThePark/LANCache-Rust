@@ -62,7 +62,7 @@ impl ProxyHttp for LANCache {
             info!("[{}] CACHE HIT: {} ({} KB)", client_ip, path, metadata.len() / 1024);
 
             let mut file = tokio::fs::File::open(&final_path).await.map_err(|_| Error::new(ErrorType::InternalError))?;
-            let mut header = ResponseHeader::build(200, None).unwrap();
+            let mut header = ResponseHeader::build(200, None).unwrap().to_owned();
             header.insert_header("Content-Type", "application/octet-stream").unwrap();
             header.insert_header("Content-Length", metadata.len()).unwrap();
             header.insert_header("X-Cache", "HIT").unwrap();
