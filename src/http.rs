@@ -6,7 +6,7 @@ use crate::config::Config;
 use crate::proxy::LANCache;
 
 pub fn create_proxy_service(engine: &Server, cfg: &Config) -> Option<pingora::services::listening::Service<HttpProxy<LANCache>>> {
-    let bind_addr = SocketAddr::new(cfg.http_bind.into(), 80);
+    let bind_addr: SocketAddr = cfg.http_bind.parse().expect("Invalid http_bind format");
 
     match TcpListener::bind(bind_addr) {
         Ok(_) => {
@@ -14,7 +14,6 @@ pub fn create_proxy_service(engine: &Server, cfg: &Config) -> Option<pingora::se
         }
         Err(e) => {
             error!("FAILED: Could not bind to {}: {}", bind_addr, e);
-            error!("Ensure you have permission (sudo) and the address/port is available.");
             return None;
         }
     }
@@ -23,7 +22,7 @@ pub fn create_proxy_service(engine: &Server, cfg: &Config) -> Option<pingora::se
         &engine.configuration, 
         LANCache { config: cfg.clone() }
     );
-    proxy_service.add_tcp(&bind_addr.to_string());
+    proxy_service.add_tcp(&cfg.http_bind);
     
     Some(proxy_service)
 }

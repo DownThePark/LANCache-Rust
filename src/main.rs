@@ -22,10 +22,11 @@ async fn main() {
 
     info!("------------------------------------------");
     info!("Starting LANCache (Rust Engine)");
-    info!("HTTP Bind:      {}", cfg.http_bind);
-    info!("DNS Bind:       {}", cfg.dns_bind);
     info!("Cache Location: {}", cfg.cache_dir);
+    info!("HTTP Address:   {}", cfg.http_bind);
+    
     if cfg.dns_enabled {
+        info!("DNS Address:    {}", cfg.dns_bind);
         info!("Intercept IP:   {}", cfg.server_ip);
         info!("Upstream DNS:   {}", cfg.upstream_dns);
     }

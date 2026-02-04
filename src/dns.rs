@@ -20,7 +20,7 @@ pub async fn create_dns_service(cfg: &Config) -> Option<hickory_server::ServerFu
         .parse::<SocketAddr>()
         .expect("Invalid upstream_dns in config.toml");
 
-    let bind_addr = SocketAddr::new(cfg.dns_bind.into(), 53);
+    let bind_addr: SocketAddr = cfg.dns_bind.parse().expect("Invalid dns_bind format");
 
     let mut resolver_config = ResolverConfig::new();
     resolver_config.add_name_server(NameServerConfig::new(upstream_addr, Protocol::Udp));
