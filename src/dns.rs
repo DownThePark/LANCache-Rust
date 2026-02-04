@@ -11,7 +11,7 @@ use crate::config::Config;
 
 #[derive(Clone)]
 pub struct LANCacheDns {
-    pub server_ip: Ipv4Addr,
+    pub intercept_ip: Ipv4Addr,
     pub resolver: TokioAsyncResolver,
 }
 
@@ -20,13 +20,13 @@ pub async fn create_dns_service(cfg: &Config) -> Option<hickory_server::ServerFu
         .parse::<SocketAddr>()
         .expect("Invalid upstream_dns in config.toml");
 
-    let bind_addr: SocketAddr = cfg.dns_bind.parse().expect("Invalid dns_bind format");
+    let bind_addr: SocketAddr = cfg.dns_bind.parse().expect("Invalid dns_bind format in config");
 
     let mut resolver_config = ResolverConfig::new();
     resolver_config.add_name_server(NameServerConfig::new(upstream_addr, Protocol::Udp));
 
     let resolver = TokioAsyncResolver::tokio(resolver_config, ResolverOpts::default());
-    let dns_handler = LANCacheDns { server_ip: cfg.server_ip, resolver };
+    let dns_handler = LANCacheDns { intercept_ip: cfg.intercept_ip, resolver };
     let mut dns_server = hickory_server::ServerFuture::new(dns_handler);
     
     match tokio::net::UdpSocket::bind(bind_addr).await {
@@ -49,10 +49,10 @@ impl RequestHandler for LANCacheDns {
         let name_str = query.name().to_string();
         
         if name_str == "lancache.steamcontent.com." && query.query_type() == RecordType::A {
-            info!("DNS INTERCEPT: {} -> {}", name_str, self.server_ip);
+            info!("DNS INTERCEPT: {} -> {}", name_str, self.intercept_ip);
             let builder = MessageResponseBuilder::from_message_request(request);
             let header = Header::response_from_request(request.header());
-            let record = Record::from_rdata(query.name().into(), 300, RData::A(A(self.server_ip)));
+            let record = Record::from_rdata(query.name().into(), 300, RData::A(A(self.intercept_ip)));
             let response = builder.build(header, std::iter::once(&record), std::iter::empty(), std::iter::empty(), std::iter::empty());
             let r_info = ResponseInfo::from(*response.header());
             return response_handle.send_response(response).await.unwrap_or(r_info);

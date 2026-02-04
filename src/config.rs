@@ -10,7 +10,7 @@ pub struct Config {
     pub dns_bind: String,
     pub cache_dir: String,
     pub dns_enabled: bool,
-    pub server_ip: Ipv4Addr,
+    pub intercept_ip: Ipv4Addr,
     pub upstream_dns: String,
 }
 
@@ -21,7 +21,7 @@ impl Default for Config {
             dns_bind: "0.0.0.0:53".to_string(),
             cache_dir: "./cache".to_string(),
             dns_enabled: true,
-            server_ip: Ipv4Addr::new(127, 0, 0, 1),
+            intercept_ip: Ipv4Addr::new(127, 0, 0, 1),
             upstream_dns: "1.1.1.1".to_string(),
         }
     }

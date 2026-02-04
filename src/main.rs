@@ -27,7 +27,7 @@ async fn main() {
     
     if cfg.dns_enabled {
         info!("DNS Address:    {}", cfg.dns_bind);
-        info!("Intercept IP:   {}", cfg.server_ip);
+        info!("Intercept IP:   {}", cfg.intercept_ip);
         info!("Upstream DNS:   {}", cfg.upstream_dns);
     }
     info!("------------------------------------------");
