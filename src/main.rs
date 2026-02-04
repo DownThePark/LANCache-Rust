@@ -7,7 +7,7 @@ use log::info;
 use pingora::prelude::*;
 use crate::config::load_or_create_config;
 use crate::dns::create_dns_service;
-use crate::http::create_proxy_service;
+use crate::http::create_http_service;
 
 #[tokio::main]
 async fn main() {
@@ -34,8 +34,8 @@ async fn main() {
 
     let mut engine = Server::new(None).expect("Failed to initialize engine");
     
-    if let Some(proxy_service) = create_proxy_service(&engine, &cfg) {
-        engine.add_service(proxy_service);
+    if let Some(http_service) = create_http_service(&engine, &cfg) {
+        engine.add_service(http_service);
     } else {
         return;
     }

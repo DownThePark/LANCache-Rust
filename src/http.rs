@@ -5,7 +5,7 @@ use pingora::proxy::HttpProxy;
 use crate::config::Config;
 use crate::proxy::LANCache;
 
-pub fn create_proxy_service(engine: &Server, cfg: &Config) -> Option<pingora::services::listening::Service<HttpProxy<LANCache>>> {
+pub fn create_http_service(engine: &Server, cfg: &Config) -> Option<pingora::services::listening::Service<HttpProxy<LANCache>>> {
     let bind_addr: SocketAddr = cfg.http_bind.parse().expect("Invalid http_bind format in config");
 
     match TcpListener::bind(bind_addr) {
@@ -19,11 +19,11 @@ pub fn create_proxy_service(engine: &Server, cfg: &Config) -> Option<pingora::se
         }
     }
 
-    let mut proxy_service = pingora::proxy::http_proxy_service(
+    let mut http_service = pingora::proxy::http_proxy_service(
         &engine.configuration, 
         LANCache { config: cfg.clone() }
     );
-    proxy_service.add_tcp(&cfg.http_bind);
+    http_service.add_tcp(&cfg.http_bind);
     
-    Some(proxy_service)
+    Some(http_service)
 }
