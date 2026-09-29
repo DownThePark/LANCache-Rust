@@ -61,6 +61,12 @@ impl ProxyHttp for LANCache {
             let metadata = fs::metadata(&final_path).map_err(|_| Error::new(ErrorType::InternalError))?;
             info!("[{}] CACHE HIT: {} ({} KB)", client_ip, path, metadata.len() / 1024);
 
+            if metadata.len() < 200 {
+                // Delete corrupted file
+                fs::remove_file(&final_path).map_err(|_| Error::new(ErrorType::InternalError))?;
+                info!("Deleted corrupted cache entry: {}", path);
+            }
+
             let mut file = tokio::fs::File::open(&final_path).await.map_err(|_| Error::new(ErrorType::InternalError))?;
             let mut header = ResponseHeader::build(200, None).unwrap().to_owned();
             header.insert_header("Content-Type", "application/octet-stream").unwrap();
